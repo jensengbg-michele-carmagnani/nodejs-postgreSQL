@@ -6,13 +6,13 @@ const Pool = require("pg").Pool;
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
-  database: "test2",
+  database: process.env.DB_NAME,
   password: process.env.DB_PASSAWORD,
   port: process.env.DB_PORT,
 });
 
 const getCar = (req, res) => {
-  pool.query("SELECT * FROM car ", (error, results) => {
+  pool.query("SELECT * FROM cars ", (error, results) => {
     if (error) {
       throw error;
     }
@@ -20,14 +20,34 @@ const getCar = (req, res) => {
   });
 };
 
-
 const getPerson = (req, res) => {
   pool.query("SELECT * FROM person", (error, results) => {
     if (error) {
-      console.log("ERROR IN QUERY", error);
+      
     }
     res.status(200).json(results.rows);
   });
+};
+
+const login = (req, res) => {
+  const { username, password } = req.body;
+  console.log(req.body);
+  const obj = {
+    success: false,
+  };
+
+  pool.query(
+    "SELECT  FROM users WHERE first_name = $1 AND password = $2",
+    [username, password],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+      }
+       obj.success = true
+      console.log("results", results.rows);
+      res.status(201).send(`success :${results.rows} +  ${obj.success}`);
+    }
+  );
 };
 
 const addCar = (req, res) => {
@@ -60,6 +80,7 @@ const delCar = (req, res, next) => {
 module.exports = {
   getCar,
   getPerson,
+  login,
   addCar,
   delCar,
 };
