@@ -37,7 +37,7 @@ const login = (req, res) => {
   };
 
   pool.query(
-    "SELECT  FROM users WHERE first_name = $1 AND password = $2",
+    "SELECT * FROM users WHERE first_name = $1 AND password = $2",
     [username, password],
     (error, results) => {
       if (error) {
@@ -45,8 +45,11 @@ const login = (req, res) => {
       }
        obj.success = true
       console.log("results", results.rows);
-      res.status(201).send(`success :${results.rows} +  ${obj.success}`);
+      res
+        .status(201)
+        .send(`success : ${JSON.stringify(results.rows)} +  ${obj.success}`);
     }
+    
   );
 };
 
