@@ -23,33 +23,79 @@ const getCar = (req, res) => {
 const getPerson = (req, res) => {
   pool.query("SELECT * FROM person", (error, results) => {
     if (error) {
-      
     }
     res.status(200).json(results.rows);
   });
 };
 
 const login = (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
   console.log(req.body);
+  // res for the front end
   const obj = {
     success: false,
+    // message:""
   };
 
   pool.query(
-    "SELECT * FROM users WHERE first_name = $1 AND password = $2",
-    [username, password],
+    "SELECT * FROM users WHERE email = $1 AND password = $2",
+    [email, password],
     (error, results) => {
       if (error) {
         console.log(error);
       }
-       obj.success = true
-      console.log("results", results.rows);
-      res
-        .status(201)
-        .send(`success : ${JSON.stringify(results.rows)} +  ${obj.success}`);
+      console.log("results ", results.rows[0]);
+
+      if (results.rows[0] != undefined) {
+        console.log("if statement ");
+        obj.success = true;
+        obj.message = "wellcomeback";
+        res.status(201).send(JSON.stringify(obj));
+      } else {
+        obj.message = "Uppss username or password incorrect!";
+        console.log(obj);
+        res.send(JSON.stringify(obj));
+      }
     }
-    
+  );
+};
+const createUser = (req, res) => {
+  const { email, password } = req.body;
+  const obj = {
+    success: false,
+    message: "",
+  };
+  console.log(req.body);
+  pool.query(
+    "SELECT * FROM users WHERE email = $1",
+    [email],
+    (error, results) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log("results ", results.rows[0]);
+
+      if (results.rows[0] == undefined) {
+        console.log('addUser stage', email, password);
+        pool.query(
+          "INSERT INTO users ( email, password ) VALUES ($1, $2)",
+          [email, password],
+          (error, results) => {
+            if (error) {
+              console.log(error);
+            }
+
+            obj.success = true;
+            obj.message = "You succefully crete the profile";
+            console.log("results", results);
+             res.status(201).send(obj);
+          }
+        );
+      } else {
+        
+        (obj.message = "The email is already in use"), res.send(obj);
+      }
+    }
   );
 };
 
@@ -86,4 +132,5 @@ module.exports = {
   login,
   addCar,
   delCar,
+  createUser,
 };

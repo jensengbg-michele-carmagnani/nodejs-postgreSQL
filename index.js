@@ -17,11 +17,12 @@ app.use(
     extended: true,
   })
 );
+app.delete("/delCar", db.delCar);
 app.get("/cars", db.getCar);
 app.get("/persons", db.getPerson);
 app.post("/addcar", db.addCar);
-app.delete("/delCar", db.delCar);
-app.post('/login', db.login)
+app.post('/login', db.login);
+app.post("/createUser", db.createUser);
 
 
 const PORT = 3000;
