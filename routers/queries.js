@@ -28,6 +28,7 @@ const getPerson = (req, res) => {
   });
 };
 
+// login in users.sql
 const login = (req, res) => {
   const { email, password } = req.body;
   console.log(req.body);
@@ -59,6 +60,8 @@ const login = (req, res) => {
     }
   );
 };
+
+// Create user in users
 const createUser = (req, res) => {
   const { email, password } = req.body;
   const obj = {
@@ -67,6 +70,7 @@ const createUser = (req, res) => {
   };
   console.log(req.body);
   pool.query(
+    // check if the email is existing in user
     "SELECT * FROM users WHERE email = $1",
     [email],
     (error, results) => {
@@ -74,9 +78,9 @@ const createUser = (req, res) => {
         console.log(error);
       }
       console.log("results ", results.rows[0]);
-
+      // if the email is not used add user
       if (results.rows[0] == undefined) {
-        console.log('addUser stage', email, password);
+        console.log("addUser stage", email, password);
         pool.query(
           "INSERT INTO users ( email, password ) VALUES ($1, $2)",
           [email, password],
@@ -88,11 +92,10 @@ const createUser = (req, res) => {
             obj.success = true;
             obj.message = "You succefully crete the profile";
             console.log("results", results);
-             res.status(201).send(obj);
+            res.status(201).send(obj);
           }
         );
       } else {
-        
         (obj.message = "The email is already in use"), res.send(obj);
       }
     }
