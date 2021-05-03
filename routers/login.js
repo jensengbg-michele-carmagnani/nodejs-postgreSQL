@@ -48,6 +48,9 @@ router.post("/", (req, res) => {
           obj.success = true;
           obj.message = "wellcomeback";
           obj.token = token;
+          obj.email = results.rows[0].email
+          obj.name = results.rows[0].name
+          obj.lastName = results.rows[0].last_name
         }
         res.status(201).send(JSON.stringify(obj));
       } else {
